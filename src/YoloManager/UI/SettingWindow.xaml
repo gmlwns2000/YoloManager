@@ -1,0 +1,40 @@
+﻿<Window x:Class="YoloManager.SettingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:YoloManager"
+        mc:Ignorable="d"
+        Title="Settings" MinWidth="320" Width="420" SizeToContent="Height" MinHeight="80">
+    <Grid>
+        <StackPanel Margin="25,10,25,25" VerticalAlignment="Top">
+            <TextBlock Text="YOLO Config Path" Margin="10,10,0,5"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding YoloConfigPath}" Height="24" VerticalContentAlignment="Center"/>
+                <local:OpenFileButton FileName="{Binding YoloConfigPath}" Grid.Column="1" Width="24"/>
+            </Grid>
+            <TextBlock Text="YOLO Weight Path" Margin="10,10,0,5"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding YoloWeightPath}" Height="24" VerticalContentAlignment="Center"/>
+                <local:OpenFileButton FileName="{Binding YoloWeightPath}" Grid.Column="1" Width="24"/>
+            </Grid>
+            <TextBlock Text="YOLO Thresh" Margin="10,10,0,5"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding YoloThresh}" Height="24" VerticalContentAlignment="Center" Width="100" Grid.Column="1"/>
+                <Slider VerticalAlignment="Center" Minimum="0.001" Maximum="1" Value="{Binding YoloThresh}" SmallChange="0.05" LargeChange="0.1"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>

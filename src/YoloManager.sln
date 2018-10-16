@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2043
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YoloManager", "YoloManager\YoloManager.csproj", "{0DBB7FA7-9D45-4EB8-B1E8-8D468B20BA8D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0DBB7FA7-9D45-4EB8-B1E8-8D468B20BA8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DBB7FA7-9D45-4EB8-B1E8-8D468B20BA8D}.Debug|x64.ActiveCfg = Debug|x64
+		{0DBB7FA7-9D45-4EB8-B1E8-8D468B20BA8D}.Debug|x64.Build.0 = Debug|x64
+		{0DBB7FA7-9D45-4EB8-B1E8-8D468B20BA8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DBB7FA7-9D45-4EB8-B1E8-8D468B20BA8D}.Release|x64.ActiveCfg = Release|x64
+		{0DBB7FA7-9D45-4EB8-B1E8-8D468B20BA8D}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E0E5C9F7-7BC7-432C-BFB3-AC858F14BA2B}
+	EndGlobalSection
+EndGlobal
