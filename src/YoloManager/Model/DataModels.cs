@@ -236,9 +236,16 @@ namespace YoloManager
                     var item = files[i];
                     if (item.Extension == ".jpg")
                     {
-                        var d = new DataFrame(this, item);
-                        lock (list)
-                            list.Add(d);
+                        try
+                        {
+                            var d = new DataFrame(this, item);
+                            lock (list)
+                                list.Add(d);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.ToString(), item.Name);
+                        }
                     }
                 }
             });
