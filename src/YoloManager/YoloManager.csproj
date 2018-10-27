@@ -93,7 +93,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Settings.cs" />
+    <Compile Include="UI\Settings.cs" />
     <Compile Include="UI\UIHelper.cs" />
     <Compile Include="UI\DatasetOptionWindow.xaml.cs">
       <DependentUpon>DatasetOptionWindow.xaml</DependentUpon>

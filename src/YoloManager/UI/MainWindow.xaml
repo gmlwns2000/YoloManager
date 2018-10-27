@@ -75,12 +75,12 @@
                     </ListView.ItemsPanel>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Width="80" Height="80">
+                            <Grid Width="80" Height="80" >
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Text="{Binding File.Name}" Margin="2,0,2,2" HorizontalAlignment="Center" />
+                                <TextBlock ToolTip="{Binding File.Name}" Text="{Binding File.Name}" Margin="2,0,2,2" HorizontalAlignment="Center" />
                                 <Image Source="{Binding ImageSource}" Margin="3" VerticalAlignment="Stretch" Stretch="Uniform" Grid.Row="1">
                                     <Image.Effect>
                                         <DropShadowEffect Opacity="0.33" ShadowDepth="0"/>

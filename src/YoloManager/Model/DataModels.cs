@@ -234,11 +234,17 @@ namespace YoloManager
                 anno.Height /= Height;
             }
 
-            return AddAnnotation(anno);
+            Annotations.Add(anno);
+
+            return anno;
         }
 
         public ObjectAnnotation AddAnnotation(ObjectAnnotation anno)
         {
+            if (anno.Parent != null)
+                throw new Exception("parent should be nulled");
+            anno.Parent = this;
+
             Annotations.Add(anno);
             return anno;
         }
@@ -323,10 +329,10 @@ namespace YoloManager
         public void TrackFrame()
         {
             int preInd = CurrentIndex;
-            NextFrame();
+            int newInd = Math.Max(0, Math.Min(Datas.Count - 1, CurrentIndex + 1));
 
             var preFrame = Datas[preInd];
-            var newFrame = Datas[currentIndex];
+            var newFrame = Datas[newInd];
 
             foreach (var a in preFrame.Annotations)
             {
@@ -341,15 +347,99 @@ namespace YoloManager
                 }
             }
 
-            foreach (var anno in preFrame.Annotations)
+            using (var preMat = OpenCvSharp.Cv2.ImRead(preFrame.File.FullName))
+            using (var newMat = OpenCvSharp.Cv2.ImRead(newFrame.File.FullName))
+            using (var multiTracker = OpenCvSharp.Tracking.MultiTracker.Create())
             {
-                var newAnno = anno.Clone();
-                newAnno.Parent = newFrame;
+                //OpenCvSharp.Cv2.EqualizeHist(preMat, preMat);
+                //OpenCvSharp.Cv2.EqualizeHist(newMat, newMat);
 
-                //TODO: Track
+                var disposable = new List<IDisposable>();
+                var trackers = new List<OpenCvSharp.Tracking.Tracker>();
+                var trackersRects = new List<OpenCvSharp.Rect2d>();
+                foreach (var item in preFrame.Annotations)
+                {
+                    //KCF not working
+                    //BOOSTING not working
+                    //TLD working
+                    //mil working
+                    //GOTURN working
+                    //MedianFlow working best
+                    //MOSSE working
+                    OpenCvSharp.Tracking.Tracker tracker;
+                    switch (Setting.Current.TrackingModel)
+                    {
+                        case 0:
+                            tracker = OpenCvSharp.Tracking.TrackerTLD.Create();
+                            break;
+                        case 1:
+                            tracker = OpenCvSharp.Tracking.TrackerMIL.Create();
+                            break;
+                        case 2:
+                            tracker = OpenCvSharp.Tracking.TrackerMOSSE.Create();
+                            break;
+                        case 3:
+                            tracker = OpenCvSharp.Tracking.TrackerMedianFlow.Create();
+                            break;
+                        case 4:
+                            tracker = OpenCvSharp.Tracking.TrackerGOTURN.Create();
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                    disposable.Add(tracker);
 
-                newFrame.AddAnnotation(newAnno);
+                    double x, y, w, h;
+                    w = item.Width * preMat.Width;
+                    h = item.Height * preMat.Height;
+                    x = item.X * preMat.Width - w / 2;
+                    y = item.Y * preMat.Height - h / 2;
+                    var rect = new OpenCvSharp.Rect2d(x, y, w, h);
+
+                    trackers.Add(tracker);
+                    trackersRects.Add(rect);
+                }
+
+                //TODO: bugfix need
+                for (int i = 0; i < preFrame.Annotations.Count; i++)
+                {
+                    var tracker = OpenCvSharp.Tracking.TrackerMedianFlow.Create();
+                    disposable.Add(tracker);
+                    trackers.Add(tracker);
+                    trackersRects.Add(trackersRects[i]);
+                }
+
+                multiTracker.Add(trackers, preMat, trackersRects);
+                multiTracker.Update(newMat, out OpenCvSharp.Rect2d[] result);
+
+                for (int i = 0; i < preFrame.Annotations.Count; i++)
+                {
+                    double w = preFrame.Width, h = preFrame.Height;
+                    var r = result[i];
+                    var p = preFrame.Annotations[i];
+                    r.X = r.X == 0 ? p.X * w - p.Width * w / 2 : r.X;
+                    r.Width = r.Width == 0 ? p.Width * w : r.Width;
+                    r.Y = r.Y == 0 ? p.Y * h - p.Height * h / 2 : r.Y;
+                    r.Height = r.Height == 0 ? p.Height * h : r.Height;
+
+                    var newAnno = p.Clone();
+                    newAnno.Parent = null;
+
+                    newAnno.Width = r.Width / newMat.Width;
+                    newAnno.Height = r.Height / newMat.Height;
+                    newAnno.X = r.X / newMat.Width + newAnno.Width / 2;
+                    newAnno.Y = r.Y / newMat.Height + newAnno.Height / 2;
+
+                    newFrame.AddAnnotation(newAnno);
+                }
+
+                foreach (var item in disposable)
+                {
+                    item.Dispose();
+                }
             }
+
+            CurrentIndex = newInd;
         }
 
         public void NextFrame()

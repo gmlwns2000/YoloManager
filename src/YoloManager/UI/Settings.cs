@@ -14,7 +14,7 @@ namespace YoloManager
 
         public static void Load()
         {
-            string path = System.IO.Path.Combine(Environment.CurrentDirectory, "Settings.xml");
+            string path = Path.Combine(Environment.CurrentDirectory, "Settings.xml");
             if (File.Exists(path))
             {
                 try
@@ -40,7 +40,7 @@ namespace YoloManager
         public static void Save()
         {
             XmlSerializer xmlSerializer = new XmlSerializer(typeof(Setting));
-            using (StreamWriter wr = new StreamWriter(System.IO.Path.Combine(Environment.CurrentDirectory, "Settings.xml")))
+            using (StreamWriter wr = new StreamWriter(Path.Combine(Environment.CurrentDirectory, "Settings.xml")))
             {
                 xmlSerializer.Serialize(wr, Current);
             }
@@ -63,5 +63,16 @@ namespace YoloManager
 
         string trainPreTrained = "darknet53.conv.74";
         public string TrainPreTrained { get => trainPreTrained; set { trainPreTrained = value; OnPropertyChanged(); } }
+
+        int trackingModel = 0;
+        public int TrackingModel { get => trackingModel; set { trackingModel = value; OnPropertyChanged(); } }
+
+        public string[] TrackingModelTypes => new[] {
+            "TLD",
+            "MIL",
+            "MOSSE",
+            "MedianFlow",
+            "GOTURN",
+        };
     }
 }

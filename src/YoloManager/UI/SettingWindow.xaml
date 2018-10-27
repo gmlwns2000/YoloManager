@@ -35,6 +35,10 @@
                 <TextBox Text="{Binding YoloThresh}" Height="24" VerticalContentAlignment="Center" Width="100" Grid.Column="1"/>
                 <Slider VerticalAlignment="Center" Minimum="0.001" Maximum="1" Value="{Binding YoloThresh}" SmallChange="0.05" LargeChange="0.1"/>
             </Grid>
+            <TextBlock Text="Tracking Method" Margin="10,10,0,5"/>
+            <Grid>
+                <ComboBox VerticalAlignment="Center" ItemsSource="{Binding TrackingModelTypes}" SelectedIndex="{Binding TrackingModel, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
         </StackPanel>
     </Grid>
 </Window>
