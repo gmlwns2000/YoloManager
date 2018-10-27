@@ -26,7 +26,7 @@ namespace YoloManager
     /// </summary>
     public partial class MainWindow : Window
     {
-        DataBaseModel dataViewModel;
+        DataBase dataViewModel;
 
         public MainWindow()
         {
@@ -34,7 +34,7 @@ namespace YoloManager
 
             InitializeComponent();
 
-            dataViewModel = new DataBaseModel();
+            dataViewModel = new DataBase();
             DataContext = dataViewModel;
 
             Closed += delegate
@@ -59,6 +59,10 @@ namespace YoloManager
                     break;
                 case Key.Right:
                     dataViewModel.CurrentModel?.NextFrame();
+                    e.Handled = true;
+                    break;
+                case Key.Space:
+                    dataViewModel.CurrentModel?.TrackFrame();
                     e.Handled = true;
                     break;
             }

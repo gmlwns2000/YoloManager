@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:YoloManager"
         mc:Ignorable="d"
-        Title="DatasetOptionWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize" MinWidth="300">
+        Title="Dataset Option" SizeToContent="WidthAndHeight" ResizeMode="NoResize" MinWidth="300">
     <Grid>
         <StackPanel Margin="10,15">
             <TextBlock Text="Class Count" Margin="10,5"/>

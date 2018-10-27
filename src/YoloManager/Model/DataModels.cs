@@ -16,6 +16,13 @@ namespace YoloManager
 {
     public class ObjectAnnotation : NotifyPropertyBase
     {
+        static int uidCount = 0;
+        int GetUID()
+        {
+            uidCount++;
+            return uidCount;
+        }
+
         int cls = -1;
         public int Class { get => cls; set { cls = Math.Max(0, value); OnPropertyChanged(); OnPropertyChanged(nameof(ClassColor)); } }
         public Color ClassColor
@@ -50,6 +57,9 @@ namespace YoloManager
             }
         }
 
+        int objId = 0;
+        public int ObjectID { get => objId; set { objId = value; OnPropertyChanged(); } }
+
         public double X { get; set; }
         public double Y { get; set; }
         public double Width { get; set; }
@@ -69,13 +79,15 @@ namespace YoloManager
             }
         }
 
-        public DataFrame Parent { get; private set; }
+        public DataFrame Parent { get; set; }
 
         public ICommand DeleteCommand => new CommandHandler(() => Delete(), true);
+        public ICommand DeleteObjectCommand => new CommandHandler(() => DeleteObject(), true);
 
         public ObjectAnnotation(DataFrame parent)
         {
             Parent = parent;
+            ObjectID = GetUID();
         }
 
         public ObjectAnnotation(DataFrame parent, string note) : this(parent)
@@ -104,9 +116,51 @@ namespace YoloManager
             return $"{Class} {X} {Y} {Width} {Height}";
         }
 
+        public void DeleteObject()
+        {
+            var frame = Parent;
+            var set = frame.Parent;
+            var frameInd = set.Datas.IndexOf(frame);
+            var dataCount = set.Datas.Count;
+
+            for (int i = 1; frameInd + i < dataCount; i++)
+            {
+                if (!DeleteObject(set.Datas[frameInd + i]))
+                    break;
+            }
+
+            for (int i = -1; i + frameInd >= 0; i--)
+            {
+                if (!DeleteObject(set.Datas[frameInd + i]))
+                    break;
+            }
+
+            Delete();
+        }
+
+        bool DeleteObject(DataFrame f)
+        {
+            bool find = false;
+            for (int k = 0; k < f.Annotations.Count; k++)
+            {
+                if (f.Annotations[k].ObjectID == ObjectID)
+                {
+                    f.Annotations.RemoveAt(k);
+                    k--;
+                    find = true;
+                }
+            }
+            return find;
+        }
+
         public void Delete()
         {
             Parent.Annotations.Remove(this);
+        }
+
+        public ObjectAnnotation Clone()
+        {
+            return (ObjectAnnotation)base.MemberwiseClone();
         }
 
         Color RandColor(int seed)
@@ -128,9 +182,9 @@ namespace YoloManager
         public double Width { get; set; }
         public double Height { get; set; }
 
-        public DataModel Parent { get; set; }
+        public DataSet Parent { get; set; }
 
-        public DataFrame(DataModel parent, FileInfo file)
+        public DataFrame(DataSet parent, FileInfo file)
         {
             Parent = parent;
 
@@ -149,7 +203,7 @@ namespace YoloManager
             Width = decoder.Frames[0].PixelWidth;
             Height = decoder.Frames[0].PixelHeight;
 
-            var note = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(file.FullName), System.IO.Path.GetFileNameWithoutExtension(file.Name) + ".txt");
+            var note = Path.Combine(Path.GetDirectoryName(file.FullName), Path.GetFileNameWithoutExtension(file.Name) + ".txt");
             var noteInfo = new FileInfo(note);
             if (noteInfo.Exists)
             {
@@ -191,7 +245,7 @@ namespace YoloManager
 
         public void Save()
         {
-            var note = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(File.FullName), System.IO.Path.GetFileNameWithoutExtension(File.Name) + ".txt");
+            var note = Path.Combine(Path.GetDirectoryName(File.FullName), Path.GetFileNameWithoutExtension(File.Name) + ".txt");
             var noteInfo = new FileInfo(note);
             if (!noteInfo.Exists)
                 noteInfo.Create().Dispose();
@@ -204,7 +258,7 @@ namespace YoloManager
         }
     }
 
-    public class DataModel : NotifyPropertyBase
+    public class DataSet : NotifyPropertyBase
     {
         bool useForTrain = true;
         public bool UseForTrain { get => useForTrain; set { useForTrain = value; OnPropertyChanged(); } }
@@ -222,8 +276,9 @@ namespace YoloManager
 
         public CommandHandler NextFrameCommand => new CommandHandler(() => NextFrame(), true);
         public CommandHandler PrevFrameCommand => new CommandHandler(() => PrevFrame(), true);
+        public CommandHandler TrackFrameCommand => new CommandHandler(() => TrackFrame(), true);
 
-        public DataModel(DirectoryInfo info)
+        public DataSet(DirectoryInfo info)
         {
             TargetDir = info;
             var list = new List<DataFrame>();
@@ -265,6 +320,38 @@ namespace YoloManager
             timer.Start();
         }
 
+        public void TrackFrame()
+        {
+            int preInd = CurrentIndex;
+            NextFrame();
+
+            var preFrame = Datas[preInd];
+            var newFrame = Datas[currentIndex];
+
+            foreach (var a in preFrame.Annotations)
+            {
+                for (int i = 0; i < newFrame.Annotations.Count; i++)
+                {
+                    var nowA = newFrame.Annotations[i];
+                    if (nowA.ObjectID == a.ObjectID)
+                    {
+                        newFrame.Annotations.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+
+            foreach (var anno in preFrame.Annotations)
+            {
+                var newAnno = anno.Clone();
+                newAnno.Parent = newFrame;
+
+                //TODO: Track
+
+                newFrame.AddAnnotation(newAnno);
+            }
+        }
+
         public void NextFrame()
         {
             CurrentIndex = Math.Max(0, Math.Min(Datas.Count - 1, CurrentIndex + 1));
@@ -289,16 +376,16 @@ namespace YoloManager
         }
     }
 
-    public class DataBaseTrainerModel : NotifyPropertyBase
+    public class DataBaseTrainer : NotifyPropertyBase
     {
-        public static void StartTrainer(DataBaseModel db)
+        public static void StartTrainer(DataBase db)
         {
-            var model = new DataBaseTrainerModel(db);
+            var model = new DataBaseTrainer(db);
             var wnd = new TrainerWindow(model);
             wnd.Show();
         }
 
-        public DataBaseModel Parent { get; set; }
+        public DataBase Parent { get; set; }
 
         public ICommand TrainCommand => new CommandHandler(() => Train(), true);
         public ICommand KillCommand => new CommandHandler(() => Kill(), true);
@@ -330,7 +417,7 @@ namespace YoloManager
         Process process;
         Dispatcher dispatcher;
 
-        public DataBaseTrainerModel(DataBaseModel Parent)
+        public DataBaseTrainer(DataBase Parent)
         {
             this.Parent = Parent;
             dispatcher = Dispatcher.CurrentDispatcher;
@@ -408,7 +495,7 @@ namespace YoloManager
 
             EndTime = DateTime.Now;
             TrainingTime = EndTime - StartTime;
-            dispatcher.Invoke(() => StdOutput.Insert(0, "Program Exited --"));
+            dispatcher.Invoke(() => StdOutput.Insert(0, "-- Program Exited --"));
             process = null;
         }
 
@@ -424,10 +511,10 @@ namespace YoloManager
         }
     }
 
-    public class DataBaseModel : NotifyPropertyBase
+    public class DataBase : NotifyPropertyBase
     {
-        ObservableCollection<DataModel> datas = new ObservableCollection<DataModel>();
-        public ObservableCollection<DataModel> Datas { get => datas; set { datas = value; OnPropertyChanged(); } }
+        ObservableCollection<DataSet> datas = new ObservableCollection<DataSet>();
+        public ObservableCollection<DataSet> Datas { get => datas; set { datas = value; OnPropertyChanged(); } }
 
         ObservableCollection<string> names = new ObservableCollection<string>();
         public ObservableCollection<string> Names { get => names; set { names = value; OnPropertyChanged(); } }
@@ -437,13 +524,13 @@ namespace YoloManager
 
         int currentIndex = 0;
         public int CurrentIndex { get => currentIndex; set { currentIndex = value; OnPropertyChanged(); OnPropertyChanged(nameof(CurrentModel)); } }
-        public DataModel CurrentModel => (currentIndex > -1 && currentIndex < datas.Count) ? datas[currentIndex] : null;
+        public DataSet CurrentModel => (currentIndex > -1 && currentIndex < datas.Count) ? datas[currentIndex] : null;
 
         public ICommand OpenCommand => new CommandHandler(() => Load(), true);
         public ICommand SaveCommand => new CommandHandler(() => Save(), true);
         public ICommand SettingCommand => new CommandHandler(() => SettingWindow.ShowSettings(), true);
         public ICommand DatasetCommand => new CommandHandler(() => new DatasetOptionWindow(this).ShowDialog(), true);
-        public ICommand TrainerCommand => new CommandHandler(() => DataBaseTrainerModel.StartTrainer(this), true);
+        public ICommand TrainerCommand => new CommandHandler(() => DataBaseTrainer.StartTrainer(this), true);
 
         public string TrainDataPath => Path.Combine(TargetDir.FullName, "train.txt");
         public string TestDataPath => Path.Combine(TargetDir.FullName, "test.txt");
@@ -459,7 +546,7 @@ namespace YoloManager
         };
         Dispatcher Dispatcher;
 
-        public DataBaseModel()
+        public DataBase()
         {
             Dispatcher = Dispatcher.CurrentDispatcher;
         }
@@ -486,7 +573,7 @@ namespace YoloManager
                 int ind = 0;
                 foreach (var item in dirs)
                 {
-                    var m = new DataModel(item);
+                    var m = new DataSet(item);
                     Dispatcher.Invoke(() => { datas.Add(m); prg.SetValue(ind); });
                     ind++;
                 }

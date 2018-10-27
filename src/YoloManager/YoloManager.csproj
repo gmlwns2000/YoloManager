@@ -78,8 +78,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Model\Settings.cs" />
-    <Compile Include="Model\UIHelper.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="UI\UIHelper.cs" />
     <Compile Include="UI\DatasetOptionWindow.xaml.cs">
       <DependentUpon>DatasetOptionWindow.xaml</DependentUpon>
     </Compile>
@@ -95,7 +95,7 @@
     <Compile Include="UI\TrainerWindow.xaml.cs">
       <DependentUpon>TrainerWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\YoloWrapper.cs" />
+    <Compile Include="YoloWrapper.cs" />
     <Page Include="UI\BBoxControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

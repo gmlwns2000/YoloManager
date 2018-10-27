@@ -45,10 +45,11 @@
         <local:Bool2VisibleConverter x:Key="bool2visible"/>
     </UserControl.Resources>
     <UserControl.ContextMenu>
-        <ContextMenu StaysOpen="{Binding ElementName=Tb_Class, Path=IsKeyboardFocusWithin}">
+        <ContextMenu>
             <MenuItem Header="Delete" Command="{Binding DeleteCommand}"/>
-            <Separator/>
-            <TextBox Text="{Binding Class, UpdateSourceTrigger=PropertyChanged}" x:Name="Tb_Class" local:TextBoxHelper.SelectAllOnFocused="True" local:TextBoxHelper.ScrollValue="True" Width="75"/>
+            <MenuItem Header="Delete Object" Command="{Binding DeleteObjectCommand}"/>
+            <TextBox Text="{Binding Class, UpdateSourceTrigger=PropertyChanged}" local:TextBoxHelper.SelectAllOnFocused="True" local:TextBoxHelper.ScrollValue="True" Width="75"/>
+            <TextBox Text="{Binding ObjectID, UpdateSourceTrigger=PropertyChanged}" local:TextBoxHelper.SelectAllOnFocused="True" local:TextBoxHelper.ScrollValue="True" Width="75"/>
             <MenuItem Header="Send to back" Command="{Binding SendBackCommand}"/>
         </ContextMenu>
     </UserControl.ContextMenu>
@@ -75,6 +76,9 @@
                     </StackPanel>
                 </StackPanel.ToolTip>
                 <TextBlock Text="{Binding Class}" FontWeight="Bold" Foreground="White" FontSize="14"/>
+                <TextBlock Text="|" Foreground="White" FontSize="14" Margin="5,0,0,0" />
+                <TextBlock Text="{Binding ObjectID}" Foreground="White" FontSize="14" Margin="5,0,0,0" />
+                <TextBlock Text="|" Visibility="{Binding IsTrackedResult, Converter={StaticResource bool2visible}}" Foreground="White" FontSize="14" Margin="5,0,0,0" />
                 <TextBlock Text="{Binding Prob}" Visibility="{Binding IsTrackedResult, Converter={StaticResource bool2visible}}" FontWeight="Bold" Foreground="White" FontSize="14" Margin="5,0,0,0" HorizontalAlignment="Left"/>
             </StackPanel>
         </Grid>

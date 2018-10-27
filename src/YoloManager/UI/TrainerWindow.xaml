@@ -60,7 +60,7 @@
         </Grid>
         <TabControl Grid.Row="1" BorderThickness="0,1,0,0">
             <TabItem Header="Console">
-                <ListBox BorderThickness="0" Margin="-2" FontFamily="Consolas" ItemsSource="{Binding StdOutput}" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.ScrollUnit="Item" VirtualizingPanel.VirtualizationMode="Recycling" Background="#FF1F1F1F" Foreground="#FF1BFF04" BorderBrush="{x:Null}">
+                <ListBox BorderThickness="0" Margin="-2" FontFamily="Consolas" ItemsSource="{Binding StdOutput, UpdateSourceTrigger=PropertyChanged}" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.ScrollUnit="Item" VirtualizingPanel.VirtualizationMode="Recycling" Background="#FF1F1F1F" Foreground="#FF1BFF04" BorderBrush="{x:Null}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding}" IsHitTestVisible="False"/>

@@ -19,8 +19,8 @@ namespace YoloManager
     /// </summary>
     public partial class TrainerWindow : Window
     {
-        DataBaseTrainerModel model;
-        public TrainerWindow(DataBaseTrainerModel model)
+        DataBaseTrainer model;
+        public TrainerWindow(DataBaseTrainer model)
         {
             this.model = model;
             InitializeComponent();

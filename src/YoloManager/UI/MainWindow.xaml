@@ -28,11 +28,13 @@
                     <Button Content="Trainer" Padding="20,0" Command="{Binding TrainerCommand}" Margin="0,0,5,0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <ProgressBar Width="75" Height="10" Margin="0,0,15,0" Maximum="{Binding CurrentModel.Datas.Count}" Value="{Binding CurrentModel.CurrentIndex}"/>
                     <TextBlock Text="{Binding CurrentModel.CurrentIndex, Converter={StaticResource index2count}}" VerticalAlignment="Center"/>
                     <TextBlock Text="/" VerticalAlignment="Center"/>
                     <TextBlock Text="{Binding CurrentModel.Datas.Count}" VerticalAlignment="Center" Margin="0,0,15,0"/>
-                    <Button Content="Prev" Padding="20,0" Command="{Binding CurrentModel.PrevFrameCommand}" Margin="0,0,5,0"/>
-                    <Button Content="Next" Padding="20,0" Command="{Binding CurrentModel.NextFrameCommand}"/>
+                    <Button Content="Prev" Width="68" Command="{Binding CurrentModel.PrevFrameCommand}" Margin="0,0,5,0" ToolTip="Go to previous frame. (Left)"/>
+                    <Button Content="Next" Width="68" Command="{Binding CurrentModel.NextFrameCommand}" Margin="0,0,5,0" ToolTip="Go to next frame. (Right)"/>
+                    <Button Content="Track" Width="68" Command="{Binding CurrentModel.TrackFrameCommand}" ToolTip="Track to next frame. (Space)"/>
                 </StackPanel>
             </Grid>
         </Grid>

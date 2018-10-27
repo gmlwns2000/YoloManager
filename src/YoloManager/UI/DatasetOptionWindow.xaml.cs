@@ -20,8 +20,8 @@ namespace YoloManager
     /// </summary>
     public partial class DatasetOptionWindow : Window
     {
-        DataBaseModel db;
-        public DatasetOptionWindow(DataBaseModel model)
+        DataBase db;
+        public DatasetOptionWindow(DataBase model)
         {
             InitializeComponent();
             DataContext = model;
